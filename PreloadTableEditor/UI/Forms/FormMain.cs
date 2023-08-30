@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,11 +25,77 @@ namespace PreloadTableEditor.UI.Forms
         public FormMain()
         {
             InitializeComponent();
+            ToggleControls(false);
 
             openFileDialog = new OpenFileDialog();
             saveFileDialog = new SaveFileDialog();
             assetBundleFile = null;
             containers = new BindingList<Data.Container>();
+        }
+
+        private void CreateContainerList()
+        {
+            containers.Clear();
+            containers = new BindingList<Data.Container>(Data.Converters.ContainerConverter.ConvertAssetBundleToContainers(assetBundleFile));
+        }
+
+        private void ApplyContainerListChanges()
+        {
+            Data.Converters.ContainerConverter.UpdateContainersToAssetBundle(assetBundleFile, containers.ToList());
+        }
+
+        private void AddBindings()
+        {
+            listContainers.DataSource = containers;
+        }
+
+        private void UpdateAll()
+        {
+            CreateContainerList();
+            AddBindings();
+            UpdateContainerList();
+            UpdateContainerEditing((Data.Container)listContainers.SelectedItem);
+        }
+
+        private void UpdateContainerList()
+        {
+            containers.ResetBindings();
+        }
+
+        private void UpdateFilesOfContainerList(Data.Container container)
+        {
+            listFilesOfContainer.DataSource = GetListOfFilesOfContainer(container);
+        }
+
+        private BindingList<Data.UnityFile> GetListOfFilesOfContainer(Data.Container container)
+        {
+            return new BindingList<Data.UnityFile>(container.Assets);
+        }
+
+        private void UpdateContainerEditing(Data.Container container)
+        {
+            UpdateFilesOfContainerList(container);
+            txtContainerName.Text = container.Name;
+            lbMainAsset.Text = string.Format("Main Asset: File {0} : {1}", container.MainAsset.FileID, container.MainAsset.PathID);
+            lbFileCount.Text = string.Format("This container preloads {0} assets.", container.Assets.Count);
+        }
+
+        private void ToggleControls(bool state)
+        {
+            tsbSave.Enabled = state;
+
+            listContainers.Enabled = state;
+            btnAddContainer.Enabled = state;
+            btnRemoveContainer.Enabled = state;
+
+            txtContainerName.Enabled = state;
+            btnRenameContainer.Enabled = state;
+            txtFileID.Enabled = state;
+            txtPathID.Enabled = state;
+            btnAddPath.Enabled = state;
+            btnRemovePath.Enabled = state;
+            btnMainPath.Enabled = state;
+            listFilesOfContainer.Enabled = state;
         }
 
         private void tsbOpen_Click(object sender, EventArgs e)
@@ -42,6 +109,7 @@ namespace PreloadTableEditor.UI.Forms
                         string json = r.ReadToEnd();
                         assetBundleFile = JsonConvert.DeserializeObject<AssetBundle>(json, new JSON.Converters.ContainerConverter());
                         UpdateAll();
+                        ToggleControls(true);
                     }
                 }
                 catch (Exception ex)
@@ -60,7 +128,7 @@ namespace PreloadTableEditor.UI.Forms
                     using (StreamWriter w = new StreamWriter(saveFileDialog.FileName))
                     {
                         ApplyContainerListChanges();
-                        string json = JsonConvert.SerializeObject(assetBundleFile, new JSON.Converters.ContainerConverter());
+                        string json = JsonConvert.SerializeObject(assetBundleFile, Formatting.Indented, new JSON.Converters.ContainerConverter());
                         w.WriteLine(json);
                     }
                 }
@@ -76,61 +144,17 @@ namespace PreloadTableEditor.UI.Forms
             UpdateContainerEditing((Data.Container)listContainers.SelectedItem);
         }
 
-        private void CreateContainerList()
-        {
-            containers.Clear();
-            containers = new BindingList<Data.Container>(Data.Converters.ContainerConverter.ConvertAssetBundleToContainers(assetBundleFile));
-        }
-
-        private void ApplyContainerListChanges()
-        {
-            Data.Converters.ContainerConverter.UpdateContainersToAssetBundle(assetBundleFile, containers.ToList());
-        }
-
-        private void UpdateAll()
-        {
-            CreateContainerList();
-            UpdateFullList();
-            UpdateContainerList();
-            UpdateContainerEditing((Data.Container)listContainers.SelectedItem);
-        }
-
-        private void UpdateFullList()
-        {
-            listAllFiles.DataSource = new BindingList<JSON.Data.UnityFile>(assetBundleFile.PreloadTable);
-        }
-
-        private void UpdateContainerList()
-        {
-            listContainers.DataSource = containers;
-        }
-
-        private void UpdateFilesOfContainerList(Data.Container container)
-        {
-            listFilesOfContainer.DataSource = GetListOfFilesOfContainer(container);
-        }
-
-        private BindingList<Data.UnityFile> GetListOfFilesOfContainer(Data.Container container)
-        {
-            return new BindingList<Data.UnityFile>(container.Assets);
-        }
-
-        private void UpdateContainerEditing(Data.Container container)
-        {
-            UpdateFilesOfContainerList(container);
-            lbContainerName.Text = container.Name;
-            lbFileCount.Text = string.Format("This container preloads {0} assets.", container.Assets.Count);
-        }
-
         private void btnAddPath_Click(object sender, EventArgs e)
         {
             if (!long.TryParse(txtFileID.Text, out var fileID))
             {
                 MessageBox.Show("Error when parsing the file ID!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
             if (!long.TryParse(txtPathID.Text, out var pathID))
             {
                 MessageBox.Show("Error when parsing the path ID!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
             ((Data.Container)listContainers.SelectedItem).Assets.Add(new Data.UnityFile()
@@ -144,6 +168,57 @@ namespace PreloadTableEditor.UI.Forms
         private void btnRemovePath_Click(object sender, EventArgs e)
         {
             ((BindingList<Data.UnityFile>)listFilesOfContainer.DataSource).RemoveAt(listFilesOfContainer.SelectedIndex);
+            UpdateContainerEditing((Data.Container)listContainers.SelectedItem);
+        }
+
+        private void btnRenameContainer_Click(object sender, EventArgs e)
+        {
+            ((Data.Container)listContainers.SelectedItem).Name = txtContainerName.Text;
+            UpdateContainerList();
+        }
+
+        private void btnAddContainer_Click(object sender, EventArgs e)
+        {
+            Data.Container container = new Data.Container();
+            container.Name = "new/added/container.prefab";
+            container.Assets = new List<Data.UnityFile>();
+            container.MainAsset = new Data.UnityFile()
+            {
+                FileID = 0,
+                PathID = 0
+            };
+
+            containers.Add(container);
+            UpdateContainerList();
+            listContainers.SelectedIndex = containers.Count - 1;
+            UpdateContainerEditing(container);
+        }
+
+        private void btnRemoveContainer_Click(object sender, EventArgs e)
+        {
+            containers.Remove((Data.Container)listContainers.SelectedItem);
+            UpdateContainerList();
+            UpdateContainerEditing((Data.Container)listContainers.SelectedItem);
+        }
+
+        private void btnMainPath_Click(object sender, EventArgs e)
+        {
+            if (!long.TryParse(txtFileID.Text, out var fileID))
+            {
+                MessageBox.Show("Error when parsing the file ID!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!long.TryParse(txtPathID.Text, out var pathID))
+            {
+                MessageBox.Show("Error when parsing the path ID!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            ((Data.Container)listContainers.SelectedItem).MainAsset = new Data.UnityFile()
+            {
+                FileID = fileID,
+                PathID = pathID
+            };
             UpdateContainerEditing((Data.Container)listContainers.SelectedItem);
         }
     }

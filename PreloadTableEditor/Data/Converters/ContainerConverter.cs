@@ -45,6 +45,11 @@ namespace PreloadTableEditor.Data.Converters
             long index = 0;
             foreach (var container in containers)
             {
+                if (container.Assets.Count == 0)
+                {
+                    continue;
+                }
+
                 JSON.Data.Container bundleContainer = new JSON.Data.Container();
                 bundleContainer.Name = container.Name;
                 bundleContainer.Info = new JSON.Data.AssetInfo();

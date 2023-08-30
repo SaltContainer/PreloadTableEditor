@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            listAllFiles = new ListBox();
             listContainers = new ListBox();
             listFilesOfContainer = new ListBox();
             lbContainerName = new Label();
@@ -36,38 +35,37 @@
             tsbOpen = new ToolStripButton();
             tsbSave = new ToolStripButton();
             grpEditContainer = new GroupBox();
+            lbMainAsset = new Label();
             lbFileCount = new Label();
+            btnMainPath = new Button();
             btnAddPath = new Button();
             btnRemovePath = new Button();
             lbPathID = new Label();
             txtPathID = new TextBox();
             lbFileID = new Label();
             txtFileID = new TextBox();
+            btnRenameContainer = new Button();
+            txtContainerName = new TextBox();
+            btnAddContainer = new Button();
+            btnRemoveContainer = new Button();
             tsToolStrip.SuspendLayout();
             grpEditContainer.SuspendLayout();
             SuspendLayout();
             // 
-            // listAllFiles
-            // 
-            listAllFiles.FormattingEnabled = true;
-            listAllFiles.ItemHeight = 15;
-            listAllFiles.Location = new Point(12, 42);
-            listAllFiles.Name = "listAllFiles";
-            listAllFiles.Size = new Size(200, 394);
-            listAllFiles.TabIndex = 0;
-            // 
             // listContainers
             // 
+            listContainers.Enabled = false;
             listContainers.FormattingEnabled = true;
             listContainers.ItemHeight = 15;
-            listContainers.Location = new Point(218, 42);
+            listContainers.Location = new Point(12, 42);
             listContainers.Name = "listContainers";
-            listContainers.Size = new Size(356, 109);
+            listContainers.Size = new Size(436, 109);
             listContainers.TabIndex = 1;
             listContainers.SelectedIndexChanged += listContainers_SelectedIndexChanged;
             // 
             // listFilesOfContainer
             // 
+            listFilesOfContainer.Enabled = false;
             listFilesOfContainer.FormattingEnabled = true;
             listFilesOfContainer.ItemHeight = 15;
             listFilesOfContainer.Location = new Point(362, 19);
@@ -77,18 +75,19 @@
             // 
             // lbContainerName
             // 
-            lbContainerName.Location = new Point(6, 19);
+            lbContainerName.AutoSize = true;
+            lbContainerName.Location = new Point(6, 25);
             lbContainerName.Name = "lbContainerName";
-            lbContainerName.Size = new Size(352, 15);
+            lbContainerName.Size = new Size(97, 15);
             lbContainerName.TabIndex = 3;
-            lbContainerName.Text = "Container Name";
+            lbContainerName.Text = "Container Name:";
             // 
             // tsToolStrip
             // 
             tsToolStrip.Items.AddRange(new ToolStripItem[] { tsbOpen, tsbSave });
             tsToolStrip.Location = new Point(0, 0);
             tsToolStrip.Name = "tsToolStrip";
-            tsToolStrip.Size = new Size(800, 39);
+            tsToolStrip.Size = new Size(594, 39);
             tsToolStrip.TabIndex = 4;
             tsToolStrip.Text = "toolStrip1";
             // 
@@ -107,6 +106,7 @@
             // tsbSave
             // 
             tsbSave.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbSave.Enabled = false;
             tsbSave.Image = Properties.Resources.save;
             tsbSave.ImageScaling = ToolStripItemImageScaling.None;
             tsbSave.ImageTransparentColor = Color.Magenta;
@@ -118,54 +118,79 @@
             // 
             // grpEditContainer
             // 
+            grpEditContainer.Controls.Add(lbMainAsset);
             grpEditContainer.Controls.Add(lbFileCount);
+            grpEditContainer.Controls.Add(btnMainPath);
             grpEditContainer.Controls.Add(btnAddPath);
             grpEditContainer.Controls.Add(btnRemovePath);
             grpEditContainer.Controls.Add(lbPathID);
             grpEditContainer.Controls.Add(txtPathID);
             grpEditContainer.Controls.Add(lbFileID);
             grpEditContainer.Controls.Add(txtFileID);
+            grpEditContainer.Controls.Add(btnRenameContainer);
             grpEditContainer.Controls.Add(lbContainerName);
+            grpEditContainer.Controls.Add(txtContainerName);
             grpEditContainer.Controls.Add(listFilesOfContainer);
-            grpEditContainer.Location = new Point(218, 157);
+            grpEditContainer.Location = new Point(12, 157);
             grpEditContainer.Name = "grpEditContainer";
             grpEditContainer.Size = new Size(570, 279);
             grpEditContainer.TabIndex = 5;
             grpEditContainer.TabStop = false;
             grpEditContainer.Text = "Container Editor";
             // 
+            // lbMainAsset
+            // 
+            lbMainAsset.Location = new Point(4, 217);
+            lbMainAsset.Name = "lbMainAsset";
+            lbMainAsset.Size = new Size(352, 15);
+            lbMainAsset.TabIndex = 14;
+            lbMainAsset.Text = "Main Asset: x - x";
+            // 
             // lbFileCount
             // 
-            lbFileCount.Location = new Point(6, 135);
+            lbFileCount.Location = new Point(4, 248);
             lbFileCount.Name = "lbFileCount";
             lbFileCount.Size = new Size(352, 15);
             lbFileCount.TabIndex = 10;
             lbFileCount.Text = "This container preloads x assets.";
             // 
+            // btnMainPath
+            // 
+            btnMainPath.Enabled = false;
+            btnMainPath.Location = new Point(109, 173);
+            btnMainPath.Name = "btnMainPath";
+            btnMainPath.Size = new Size(247, 23);
+            btnMainPath.TabIndex = 13;
+            btnMainPath.Text = "Make Asset the Main Asset";
+            btnMainPath.UseVisualStyleBackColor = true;
+            btnMainPath.Click += btnMainPath_Click;
+            // 
             // btnAddPath
             // 
-            btnAddPath.Location = new Point(171, 109);
+            btnAddPath.Enabled = false;
+            btnAddPath.Location = new Point(109, 144);
             btnAddPath.Name = "btnAddPath";
-            btnAddPath.Size = new Size(90, 23);
+            btnAddPath.Size = new Size(120, 23);
             btnAddPath.TabIndex = 9;
-            btnAddPath.Text = "Add";
+            btnAddPath.Text = "Add Asset";
             btnAddPath.UseVisualStyleBackColor = true;
             btnAddPath.Click += btnAddPath_Click;
             // 
             // btnRemovePath
             // 
-            btnRemovePath.Location = new Point(266, 109);
+            btnRemovePath.Enabled = false;
+            btnRemovePath.Location = new Point(236, 144);
             btnRemovePath.Name = "btnRemovePath";
-            btnRemovePath.Size = new Size(90, 23);
+            btnRemovePath.Size = new Size(120, 23);
             btnRemovePath.TabIndex = 8;
-            btnRemovePath.Text = "Remove";
+            btnRemovePath.Text = "Remove Asset";
             btnRemovePath.UseVisualStyleBackColor = true;
             btnRemovePath.Click += btnRemovePath_Click;
             // 
             // lbPathID
             // 
             lbPathID.AutoSize = true;
-            lbPathID.Location = new Point(117, 83);
+            lbPathID.Location = new Point(55, 118);
             lbPathID.Name = "lbPathID";
             lbPathID.Size = new Size(48, 15);
             lbPathID.TabIndex = 7;
@@ -173,15 +198,16 @@
             // 
             // txtPathID
             // 
-            txtPathID.Location = new Point(171, 80);
+            txtPathID.Enabled = false;
+            txtPathID.Location = new Point(109, 115);
             txtPathID.Name = "txtPathID";
-            txtPathID.Size = new Size(185, 23);
+            txtPathID.Size = new Size(247, 23);
             txtPathID.TabIndex = 5;
             // 
             // lbFileID
             // 
             lbFileID.AutoSize = true;
-            lbFileID.Location = new Point(123, 54);
+            lbFileID.Location = new Point(61, 89);
             lbFileID.Name = "lbFileID";
             lbFileID.Size = new Size(42, 15);
             lbFileID.TabIndex = 6;
@@ -189,20 +215,67 @@
             // 
             // txtFileID
             // 
-            txtFileID.Location = new Point(171, 51);
+            txtFileID.Enabled = false;
+            txtFileID.Location = new Point(109, 86);
             txtFileID.Name = "txtFileID";
-            txtFileID.Size = new Size(185, 23);
+            txtFileID.Size = new Size(247, 23);
             txtFileID.TabIndex = 4;
+            // 
+            // btnRenameContainer
+            // 
+            btnRenameContainer.Enabled = false;
+            btnRenameContainer.Location = new Point(236, 51);
+            btnRenameContainer.Name = "btnRenameContainer";
+            btnRenameContainer.Size = new Size(120, 23);
+            btnRenameContainer.TabIndex = 12;
+            btnRenameContainer.Text = "Rename Container";
+            btnRenameContainer.UseVisualStyleBackColor = true;
+            btnRenameContainer.Click += btnRenameContainer_Click;
+            // 
+            // txtContainerName
+            // 
+            txtContainerName.Enabled = false;
+            txtContainerName.Location = new Point(109, 22);
+            txtContainerName.Name = "txtContainerName";
+            txtContainerName.Size = new Size(247, 23);
+            txtContainerName.TabIndex = 11;
+            // 
+            // btnAddContainer
+            // 
+            btnAddContainer.Enabled = false;
+            btnAddContainer.Location = new Point(454, 42);
+            btnAddContainer.Name = "btnAddContainer";
+            btnAddContainer.Size = new Size(128, 23);
+            btnAddContainer.TabIndex = 13;
+            btnAddContainer.Text = "Add Container";
+            btnAddContainer.UseVisualStyleBackColor = true;
+            btnAddContainer.Click += btnAddContainer_Click;
+            // 
+            // btnRemoveContainer
+            // 
+            btnRemoveContainer.Enabled = false;
+            btnRemoveContainer.Location = new Point(454, 71);
+            btnRemoveContainer.Name = "btnRemoveContainer";
+            btnRemoveContainer.Size = new Size(128, 23);
+            btnRemoveContainer.TabIndex = 14;
+            btnRemoveContainer.Text = "Remove Container";
+            btnRemoveContainer.UseVisualStyleBackColor = true;
+            btnRemoveContainer.Click += btnRemoveContainer_Click;
             // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(594, 450);
+            Controls.Add(btnRemoveContainer);
+            Controls.Add(btnAddContainer);
             Controls.Add(grpEditContainer);
             Controls.Add(tsToolStrip);
             Controls.Add(listContainers);
-            Controls.Add(listAllFiles);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
+            MaximumSize = new Size(610, 489);
+            MinimumSize = new Size(610, 489);
             Name = "FormMain";
             Text = "Preload Table Editor";
             tsToolStrip.ResumeLayout(false);
@@ -214,8 +287,6 @@
         }
 
         #endregion
-
-        private ListBox listAllFiles;
         private ListBox listContainers;
         private ListBox listFilesOfContainer;
         private Label lbContainerName;
@@ -230,5 +301,11 @@
         private Label lbFileID;
         private TextBox txtFileID;
         private Label lbFileCount;
+        private TextBox txtContainerName;
+        private Button btnRenameContainer;
+        private Button btnAddContainer;
+        private Button btnRemoveContainer;
+        private Button btnMainPath;
+        private Label lbMainAsset;
     }
 }
