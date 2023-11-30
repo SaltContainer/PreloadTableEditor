@@ -144,7 +144,22 @@ namespace PreloadTableEditor.UI.Forms
                     using (StreamWriter w = new StreamWriter(saveFileDialog.FileName))
                     {
                         ApplyContainerListChanges();
-                        string json = JsonConvert.SerializeObject(assetBundleFile, Formatting.Indented, new JSON.Converters.ContainerConverter());
+
+                        string json = "";
+
+                        switch ((PreloadTableFileFormat)tscomboFormat.SelectedIndex)
+                        {
+                            case PreloadTableFileFormat.NoArrayField:
+                            default:
+                                json = JsonConvert.SerializeObject(assetBundleFile, Formatting.Indented, new JSON.Converters.ContainerConverter());
+                                break;
+
+                            case PreloadTableFileFormat.WithArrayField:
+                                ArrayFieldAssetBundle tempBundle = Data.Converters.ContainerConverter.ConvertToArrayFieldBundle(assetBundleFile);
+                                json = JsonConvert.SerializeObject(tempBundle, Formatting.Indented);
+                                break;
+                        }
+
                         w.WriteLine(json);
                     }
                 }

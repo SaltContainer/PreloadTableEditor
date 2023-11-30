@@ -93,5 +93,23 @@ namespace PreloadTableEditor.Data.Converters
                 SceneHashes = arrayFieldAssetBundle.SceneHashes.Array
             };
         }
+
+        public static JSON.Data.ArrayFieldAssetBundle ConvertToArrayFieldBundle(JSON.Data.AssetBundle assetBundle)
+        {
+            return new ArrayFieldAssetBundle()
+            {
+                Name = assetBundle.Name,
+                PreloadTable = new ArrayContainer<JSON.Data.UnityFile>() { Array = assetBundle.PreloadTable },
+                Container = new ArrayContainer<ArrayFieldContainer>() { Array = assetBundle.Container.Select(c => new JSON.Data.ArrayFieldContainer() { Name = c.Name, Info = c.Info }).ToList() },
+                MainAsset = assetBundle.MainAsset,
+                RuntimeCompatibility = assetBundle.RuntimeCompatibility,
+                AssetBundleName = assetBundle.AssetBundleName,
+                Dependencies = new ArrayContainer<string>() { Array = assetBundle.Dependencies },
+                IsStreamedSceneAssetBundle = assetBundle.IsStreamedSceneAssetBundle,
+                ExplicitDataLayout = assetBundle.ExplicitDataLayout,
+                PathFlags = assetBundle.PathFlags,
+                SceneHashes = new ArrayContainer<string> { Array = assetBundle.SceneHashes }
+            };
+        }
     }
 }
