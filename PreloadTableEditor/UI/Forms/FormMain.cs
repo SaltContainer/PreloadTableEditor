@@ -2,6 +2,7 @@
 using PreloadTableEditor.Data;
 using PreloadTableEditor.JSON.Converters;
 using PreloadTableEditor.JSON.Data;
+using PreloadTableEditor.UI.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,6 +27,8 @@ namespace PreloadTableEditor.UI.Forms
         {
             InitializeComponent();
             ToggleControls(false);
+
+            tscomboFormat.SelectedIndex = (int)PreloadTableFileFormat.NoArrayField;
 
             openFileDialog = new OpenFileDialog();
             saveFileDialog = new SaveFileDialog();
@@ -107,7 +110,20 @@ namespace PreloadTableEditor.UI.Forms
                     using (StreamReader r = new StreamReader(openFileDialog.FileName))
                     {
                         string json = r.ReadToEnd();
-                        assetBundleFile = JsonConvert.DeserializeObject<AssetBundle>(json, new JSON.Converters.ContainerConverter());
+
+                        switch ((PreloadTableFileFormat)tscomboFormat.SelectedIndex)
+                        {
+                            case PreloadTableFileFormat.NoArrayField:
+                            default:
+                                assetBundleFile = JsonConvert.DeserializeObject<AssetBundle>(json, new JSON.Converters.ContainerConverter());
+                                break;
+
+                            case PreloadTableFileFormat.WithArrayField:
+                                ArrayFieldAssetBundle tempBundle = JsonConvert.DeserializeObject<ArrayFieldAssetBundle>(json);
+                                assetBundleFile = Data.Converters.ContainerConverter.ConvertFromArrayFieldBundle(tempBundle);
+                                break;
+                        }
+
                         UpdateAll();
                         ToggleControls(true);
                     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PreloadTableEditor.JSON.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,6 +74,24 @@ namespace PreloadTableEditor.Data.Converters
 
                 assetBundle.Container.Add(bundleContainer);
             }
+        }
+
+        public static JSON.Data.AssetBundle ConvertFromArrayFieldBundle(JSON.Data.ArrayFieldAssetBundle arrayFieldAssetBundle)
+        {
+            return new AssetBundle()
+            {
+                Name = arrayFieldAssetBundle.Name,
+                PreloadTable = arrayFieldAssetBundle.PreloadTable.Array,
+                Container = arrayFieldAssetBundle.Container.Array.Select(c => new JSON.Data.Container() { Name = c.Name, Info = c.Info }).ToList(),
+                MainAsset = arrayFieldAssetBundle.MainAsset,
+                RuntimeCompatibility = arrayFieldAssetBundle.RuntimeCompatibility,
+                AssetBundleName = arrayFieldAssetBundle.AssetBundleName,
+                Dependencies = arrayFieldAssetBundle.Dependencies.Array,
+                IsStreamedSceneAssetBundle = arrayFieldAssetBundle.IsStreamedSceneAssetBundle,
+                ExplicitDataLayout = arrayFieldAssetBundle.ExplicitDataLayout,
+                PathFlags = arrayFieldAssetBundle.PathFlags,
+                SceneHashes = arrayFieldAssetBundle.SceneHashes.Array
+            };
         }
     }
 }

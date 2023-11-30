@@ -34,6 +34,8 @@
             tsToolStrip = new ToolStrip();
             tsbOpen = new ToolStripButton();
             tsbSave = new ToolStripButton();
+            tss1 = new ToolStripSeparator();
+            tscomboFormat = new ToolStripComboBox();
             grpEditContainer = new GroupBox();
             lbMainAsset = new Label();
             lbFileCount = new Label();
@@ -84,7 +86,7 @@
             // 
             // tsToolStrip
             // 
-            tsToolStrip.Items.AddRange(new ToolStripItem[] { tsbOpen, tsbSave });
+            tsToolStrip.Items.AddRange(new ToolStripItem[] { tsbOpen, tsbSave, tss1, tscomboFormat });
             tsToolStrip.Location = new Point(0, 0);
             tsToolStrip.Name = "tsToolStrip";
             tsToolStrip.Size = new Size(594, 39);
@@ -115,6 +117,18 @@
             tsbSave.Text = "toolStripButton2";
             tsbSave.ToolTipText = "Save";
             tsbSave.Click += tsbSave_Click;
+            // 
+            // tss1
+            // 
+            tss1.Name = "tss1";
+            tss1.Size = new Size(6, 39);
+            // 
+            // tscomboFormat
+            // 
+            tscomboFormat.DropDownStyle = ComboBoxStyle.DropDownList;
+            tscomboFormat.Items.AddRange(new object[] { "BDSP Repacker Format (No Array field)", "UABEA Format (With Array field)" });
+            tscomboFormat.Name = "tscomboFormat";
+            tscomboFormat.Size = new Size(250, 39);
             // 
             // grpEditContainer
             // 
@@ -307,5 +321,7 @@
         private Button btnRemoveContainer;
         private Button btnMainPath;
         private Label lbMainAsset;
+        private ToolStripSeparator tss1;
+        private ToolStripComboBox tscomboFormat;
     }
 }
